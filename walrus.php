@@ -25,7 +25,7 @@
 //
 // To get a copy of this script, visit http://www.walrusphp.com
 ----------------------------------------------------------------------------- -->
-<?
+<?php
 /*
  The following variables must be customized as indicated. Load the file
  "walrus_validate.php" to check them.
@@ -101,11 +101,11 @@ $first_strip = "2001-11-29";
  based on the following color choices. 
 */
 
-$months_per_row = "3"; 			  // How many months per row. Default is "3".
+$months_per_row = "3";              // How many months per row. Default is "3".
 
-$calendar_bgcolor = "#000000"; 	  // Background color of calendar months. Default is "#000000" - Black
-$calendar_month = "#CC0000"; 	  // Background color of month name. Default is "#CC0000" - Dark Red
-$calendar_outline = "#666666"; 	  // Outline color for calendar months. Default is "#666666" - Dark Grey
+$calendar_bgcolor = "#000000";      // Background color of calendar months. Default is "#000000" - Black
+$calendar_month = "#CC0000";      // Background color of month name. Default is "#CC0000" - Dark Red
+$calendar_outline = "#666666";      // Outline color for calendar months. Default is "#666666" - Dark Grey
 $calendar_highlight = "#000000";  // Color for background of days with strips. Default is "#000000" - Black
 $calendar_font_color = "#FFFFFF"; // Color of the numbers of days without strips. Default is "#FFFFFF" - White
 $calendar_font_month = "#FFFFFF"; // Color of month name. Default is "#FFFFFF" - White
@@ -126,131 +126,159 @@ $powered_by_walrus = "yes";   // "yes" or "no"
 -----------------------------------------------------------------------------
 */
 
-	 $gtod1 = gettimeofday();
-     $is_last="no";
-     $today = date("Y-m-d");
-     if (isset($_GET['date'])) { $date=$_GET['date']; }
- 	 else { $date = $today;
-            $is_last="yes";
-          }
-     if ( ereg("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", $date) ) {     }
-          else { $date = date("Y-m-d"); }
-     if ($date > date("Y-m-d")) { $date = date("Y-m-d"); }
-     
-     $walrus_version = "2.9.5080700";
-	 
-	 $update_interval = "86400";
+$gtod1 = gettimeofday();
+$is_last = "no";
+$today = date("Y-m-d");
+if (isset($_GET['date'])) {
+    $date = $_GET['date'];
+} else {
+    $date = $today;
+    $is_last = "yes";
+}
+if (preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $date)) {
+} else {
+    $date = date("Y-m-d");
+}
+if ($date > date("Y-m-d")) {
+    $date = date("Y-m-d");
+}
+
+$walrus_version = "2.9.5080700";
+
+$update_interval = "86400";
 
 // Get Absolute Path to strips and news on the server
-     $comic_path = getcwd() . "/" . $comic_url;
-     $news_path = getcwd() . "/" . $news_url;
+$comic_path = getcwd() . "/" . $comic_url;
+$news_path = getcwd() . "/" . $news_url;
 
-	 function next_strip ($date)
-               { global $comic_path;
-                 global $today;
-                 global $image_suffix;
-                 global $image_suffix2;
-                 global $update_interval;
-                 $epoch = mktime(10, 0, 0, substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4));
-                 while ($epoch = $epoch + $update_interval)
-                        {   $newdate = date("Y-m-d", $epoch);
-                            if ($newdate > $today) { return ''; }
-                            if (file_exists($comic_path . $newdate . $image_suffix) ||
-                            file_exists($comic_path . $newdate . $image_suffix2))
-                            { return $newdate; }
-                        }
-               }
+function next_strip($date)
+{
+    global $comic_path;
+    global $today;
+    global $image_suffix;
+    global $image_suffix2;
+    global $update_interval;
+    $epoch = mktime(10, 0, 0, substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4));
+    while ($epoch = $epoch + $update_interval) {
+        $newdate = date("Y-m-d", $epoch);
+        if ($newdate > $today) {
+            return '';
+        }
+        if (file_exists($comic_path . $newdate . $image_suffix) ||
+            file_exists($comic_path . $newdate . $image_suffix2)) {
+            return $newdate;
+        }
+    }
+}
 
-     function previous_strip ($date)
-                   {    global $comic_path;
-                        global $first_strip;
-                        global $image_suffix;
-                        global $image_suffix2;
-                        global $update_interval;
-                        $epoch = mktime(10, 0, 0, substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4));
-                        while ($epoch = $epoch - $update_interval)
-                        {
-                            $newdate = date("Y-m-d", $epoch);
-                            if ($newdate < $first_strip) { return ''; }
-                            if (file_exists($comic_path . $newdate . $image_suffix) ||
-                            file_exists($comic_path . $newdate . $image_suffix2))
-                            { return $newdate; }
-                        }
-                   }
+function previous_strip($date)
+{
+    global $comic_path;
+    global $first_strip;
+    global $image_suffix;
+    global $image_suffix2;
+    global $update_interval;
+    $epoch = mktime(10, 0, 0, substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4));
+    while ($epoch = $epoch - $update_interval) {
+        $newdate = date("Y-m-d", $epoch);
+        if ($newdate < $first_strip) {
+            return '';
+        }
+        if (file_exists($comic_path . $newdate . $image_suffix) ||
+            file_exists($comic_path . $newdate . $image_suffix2)) {
+            return $newdate;
+        }
+    }
+}
 
-    function get_strip ($date)
-                   {   global $comic_path;
-                       global $image_suffix;
-                       global $image_suffix2;
-                       global $previous;
-                       global $strips;
-                       global $first_strip;
+function get_strip($date)
+{
+    global $comic_path;
+    global $image_suffix;
+    global $image_suffix2;
+    global $previous;
+    global $strips;
+    global $first_strip;
 
-                       if (file_exists($comic_path . $date . $image_suffix))
-                       { $current_strip = $date . $image_suffix; }
-                       elseif (file_exists($comic_path . $date . $image_suffix2))
-                       { $current_strip = $date . $image_suffix2; }
-                       else { if ($date != $first_strip)
-                              { $prevstrip = $date;
-                                $breakloop = 0;
-                                do { $prevstrip = previous_strip($prevstrip);
-                                     if(file_exists($comic_path . $prevstrip . $image_suffix))
-                                     { $current_strip = $prevstrip . $image_suffix;
-                                       $breakloop = 1;
-                                     }
-                                     elseif(file_exists($comic_path . $prevstrip . $image_suffix2))
-                                     { $current_strip = $prevstrip . $image_suffix2;
-                                       $breakloop = 1; }
-                                   } while ($breakloop <> 1);
-                              }
-                            }
-                   return $current_strip;
-                   }
+    if (file_exists($comic_path . $date . $image_suffix)) {
+        $current_strip = $date . $image_suffix;
+    } elseif (file_exists($comic_path . $date . $image_suffix2)) {
+        $current_strip = $date . $image_suffix2;
+    } else {
+        if ($date != $first_strip) {
+            $prevstrip = $date;
+            $breakloop = 0;
+            do {
+                $prevstrip = previous_strip($prevstrip);
+                if (file_exists($comic_path . $prevstrip . $image_suffix)) {
+                    $current_strip = $prevstrip . $image_suffix;
+                    $breakloop = 1;
+                } elseif (file_exists($comic_path . $prevstrip . $image_suffix2)) {
+                    $current_strip = $prevstrip . $image_suffix2;
+                    $breakloop = 1;
+                }
+            } while ($breakloop <> 1);
+        }
+    }
+    return $current_strip;
+}
 
-    function get_news ($date)
-                   {   global $news_path;
-                       global $comic_url;
-                       global $news_suffix;
-                       global $previous;
-                       global $news;
-                       global $lock_news;
-                       global $first_strip;
+function get_news($date)
+{
+    global $news_path;
+    global $comic_url;
+    global $news_suffix;
+    global $previous;
+    global $news;
+    global $lock_news;
+    global $first_strip;
 
-                       if ($news !="yes")
-                       { return ''; } /* if $news doesn't equal "yes" then DO NOTHING */
-                       elseif (file_exists($news_path . $date . $news_suffix))
-                       { include($news_path . $date . $news_suffix); }
-                       else { if ($lock_news !="yes")
-                              { if ($date != $first_strip)
-                                { $prevnews = $date;
-                                  $breakloop = 0;
-                                  do { $prevnews = previous_strip($prevnews);
-                                       if(file_exists($news_path . $prevnews . $news_suffix))
-                                       { $breakloop = 1; }
-                                     } while ($breakloop <> 1);
-                                     include($news_path . $prevnews . $news_suffix);
-                                }
-                              }
-                            }
-                   }
+    if ($news != "yes") {
+        return '';
+    } /* if $news doesn't equal "yes" then DO NOTHING */
+    elseif (file_exists($news_path . $date . $news_suffix)) {
+        include($news_path . $date . $news_suffix);
+    } else {
+        if ($lock_news != "yes") {
+            if ($date != $first_strip) {
+                $prevnews = $date;
+                $breakloop = 0;
+                do {
+                    $prevnews = previous_strip($prevnews);
+                    if (file_exists($news_path . $prevnews . $news_suffix)) {
+                        $breakloop = 1;
+                    }
+                } while ($breakloop <> 1);
+                include($news_path . $prevnews . $news_suffix);
+            }
+        }
+    }
+}
 
 function Check_Version($walrus_version)
-         { global $powered_by_walrus;
-           global $walrus_version;
+{
+    global $powered_by_walrus;
+    global $walrus_version;
 
-           if ($powered_by_walrus != "yes") { $versioncheck = ''; }
-           else { include "http://www.walrusphp.com/files/current_version.php?version=" . $walrus_version; }
-         }
-?><!-- Walrus <? echo $walrus_version; ?> --><?
-	if ($strips == "yes")
-	   { $strip_date = get_strip($date);
-		 $current_strip = "<img src=\"" . $comic_url . $strip_date . "\" alt=\"" . $strip_date . "\">"; }
-	   else
-	   { $current_strip = ''; }
-	$previous = previous_strip(get_strip($date));
-	$prevlink = $walrus_page . "?date=" . $previous;
-	$firstlink = $walrus_page . "?date=" . $first_strip;
-	$next = next_strip($date);
-	$nextlink = $walrus_page . "?date=" . $next;
-	$lastlink = $walrus_page;
+    if ($powered_by_walrus != "yes") {
+        $versioncheck = '';
+    }
+//    } else {
+////        include "http://www.walrusphp.com/files/current_version.php?version=" . $walrus_version;
+//    }
+}
+
+?><!-- Walrus <?php echo $walrus_version; ?> --><?php
+if ($strips == "yes") {
+    $strip_date = get_strip($date);
+    $current_strip = "<img src=\"" . $comic_url . $strip_date . "\" alt=\"" . $strip_date . "\">";
+} else {
+    $current_strip = '';
+}
+$previous = previous_strip(get_strip($date));
+$prevlink = $walrus_page . "?date=" . $previous;
+$firstlink = $walrus_page . "?date=" . $first_strip;
+$next = next_strip($date);
+$nextlink = $walrus_page . "?date=" . $next;
+$lastlink = $walrus_page;
 ?>
